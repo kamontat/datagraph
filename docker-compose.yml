@@ -66,7 +66,7 @@ services:
     image: gcr.io/the-tokenizer-268111/metricbeat:latest
     user: root
     environment: 
-      METRICBEAT_ELASTICSEARCH_PASSWORD: YP4IDo3cZ2NNxqGRUv0I
+      ESPW_BEAT: YP4IDo3cZ2NNxqGRUv0I
     depends_on:
       - elasticsearch
     volumes:
