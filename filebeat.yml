@@ -17,4 +17,4 @@ output.logstash:
 setup.kibana:
   host: "kibana:5601"
   username: "filebeat_internal"
-  password: :${ESPW_FILEBEAT}
+  password: "${ESPW_FILEBEAT}"
