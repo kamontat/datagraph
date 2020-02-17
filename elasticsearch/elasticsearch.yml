@@ -1,10 +1,19 @@
 cluster.name: "docker"
 network.host: 0.0.0.0
 
-xpack.security.enabled: true
-xpack.security.transport.ssl.enabled: true
-xpack.security.transport.ssl.keystore.type: PKCS12
-xpack.security.transport.ssl.verification_mode: certificate
-xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
-xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
-xpack.security.transport.ssl.truststore.type: PKCS12
+xpack:
+  security:
+    enabled: true
+    transport:
+      ssl:
+        enabled: true
+        keystore.type: PKCS12
+        verification_mode: certificate
+        keystore:
+          path: elastic-certificates.p12
+        truststore:
+          path: elastic-certificates.p12
+          type: PKCS12
+    authc:
+      api_key:
+        enabled: true

@@ -15,7 +15,7 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/elasticsearch-exporter:latest
     command:
-      - "--es.uri=http://remote_monitoring_user:3LO2DgD6LWlEsHhu2VPm@elasticsearch:9200"
+      - "--es.uri=http://remote_monitoring_user:hHfIHSeboCNeemqkOumz@elasticsearch:9200"
     depends_on:
       - elasticsearch
     ports:
@@ -54,6 +54,8 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/filebeat:latest
     user: root
+    environment:
+      ESPW_FILEBEAT: "3mEAdNEcqprff2VCwCHG"
     depends_on:
       - logstash
     volumes:
@@ -65,8 +67,8 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/metricbeat:latest
     user: root
-    environment: 
-      ESPW_BEAT: YP4IDo3cZ2NNxqGRUv0I
+    environment:
+      ESPW_METRICBEAT: "YP4IDo3cZ2NNxqGRUv0I"
     depends_on:
       - elasticsearch
     volumes:
@@ -79,9 +81,9 @@ services:
   logstash:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/logstash:latest
-    environment: 
-      ESPW_LOGSTASH: ""
-      ESPW_LOGSTASH_INTERNAL: ""
+    environment:
+      ESPW_LOGSTASH: "xjzfiXTpZU2E7kQ2txwc"
+      ESPW_LOGSTASH_INTERNAL: "ALtC9FPwEvowqgGh2Nyv"
     volumes:
       - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
@@ -111,8 +113,8 @@ services:
     volumes:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
       - logging:/var/log
-    environment: 
-      ESPW_KIBANA: ""
+    environment:
+      ESPW_KIBANA: "mYw11SpuBafbxnyGsv5b"
     depends_on:
       - elasticsearch
     ports:

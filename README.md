@@ -1,4 +1,6 @@
-# Usage
+# Graph
+
+## Usage
 
 1. Setup **google cloud platform container registry**
 2. Run `docker-compose up -d`
@@ -15,15 +17,21 @@
    5. Min time interval: 1m
 6. Import Dashboard from grafana folder
 
-# Update Elasticsearch password
+## Update Elasticsearch password
 
 1. Generate password for all exist user: `bin/elasticsearch-setup-passwords auto` (in elasticsearch container)
 2. Set password in `elasticsearch-exporter`
 3. Set all password environment in `docker-compose.yml`
-   1. set `$ESPW_BEAT` (username=beats_system)
-   2. set `$ESPW_LOGSTASH_INTERNAL` (username=logstash_internal)
-   3. set `$ESPW_LOGSTASH` (username=logstash_system)
-   4. set `$ESPW_KIBANA` (username=kibana)
+   1. set `$ESPW_FILEBEAT` (username=filebeat_internal)
+   2. set `$ESPW_METRICBEAT` (username=metricbeat_internal)
+   3. set `$ESPW_LOGSTASH_INTERNAL` (username=logstash_internal)
+   4. set `$ESPW_LOGSTASH` (username=logstash_system)
+   5. set `$ESPW_KIBANA` (username=kibana)
+
+## FAQ
+
+1. [filebeat.yml](filebeat.yml) and [metricbeat.yml](metricbeat.yml) must own by root
+2. every data directory must call `sudo chown -R 1000:1000 data`
 
 # Link
 
