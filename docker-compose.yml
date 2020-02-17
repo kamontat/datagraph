@@ -1,0 +1,94 @@
+version: "3"
+
+volumes:
+  logging:
+
+services:
+  node-exporter:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/node-exporter:latest
+    volumes:
+      - logging:/var/log
+    ports:
+      - "3502:9100"
+  elasticsearch-exporter:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/elasticsearch-exporter:latest
+    command:
+      - "--es.uri=http://elasticsearch:9200"
+    depends_on:
+      - elasticsearch
+    ports:
+      - "3503:9114"
+  online-user:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/onuser:latest
+    volumes:
+      - logging:/var/log
+    ports:
+      - "3501:1234"
+  prometheus:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+      - logging:/var/log
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "3200:9090"
+  grafana:
+    image: gcr.io/the-tokenizer-268111/grafana:latest
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - logging:/var/log
+    depends_on:
+      - prometheus
+    environment:
+      GF_SERVER_HTTP_PORT: "3100"
+      GF_SERVER_ROOT_URL: "http://34.69.181.155:3100"
+    ports:
+      - "3100:3100"
+  filebeat:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/filebeat:latest
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - logging:/var/log
+  logstash:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/logstash:latest
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - logging:/var/log
+    depends_on:
+      - filebeat
+    ports:
+      - "3800:9600"
+      - "3801:5044"
+  elasticsearch:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/elasticsearch:latest
+    volumes:
+      # - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - logging:/var/log
+    environment:
+      discovery.type: "single-node"
+    depends_on:
+      - logstash
+    ports:
+      - "3201:9200"
+      - "3202:9300"
+  kibana:
+    image: gcr.io/the-tokenizer-268111/kibana:latest
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+      - logging:/var/log
+    depends_on:
+      - elasticsearch
+    ports:
+      - "3101:5601"
