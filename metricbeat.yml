@@ -30,7 +30,7 @@ processors:
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   username: "beats_system"
-  password: "lRU8RnYXXh5IJWuuN63H"
+  password: :${METRICBEAT_ELASTICSEARCH_PASSWORD}
 
 setup.kibana:
   host: "kibana:5601"

@@ -65,6 +65,8 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/metricbeat:latest
     user: root
+    environment: 
+      METRICBEAT_ELASTICSEARCH_PASSWORD: YP4IDo3cZ2NNxqGRUv0I
     depends_on:
       - elasticsearch
     volumes:
@@ -77,6 +79,9 @@ services:
   logstash:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/logstash:latest
+    environment: 
+      ESPW_LOGSTASH: ""
+      ESPW_LOGSTASH_INTERNAL: ""
     volumes:
       - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
@@ -106,6 +111,8 @@ services:
     volumes:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
       - logging:/var/log
+    environment: 
+      ESPW_KIBANA: ""
     depends_on:
       - elasticsearch
     ports:

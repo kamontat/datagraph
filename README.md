@@ -15,6 +15,15 @@
    5. Min time interval: 1m
 6. Import Dashboard from grafana folder
 
+# Update Elasticsearch password
+
+1. Generate password for all exist user: `bin/elasticsearch-setup-passwords auto` (in elasticsearch container)
+2. Set all password environment in `docker-compose.yml`
+   1. set `$ESPW_BEAT` (username=beats_system)
+   2. set `$ESPW_LOGSTASH_INTERNAL` (username=logstash_internal)
+   3. set `$ESPW_LOGSTASH` (username=logstash_system)
+   4. set `$ESPW_KIBANA` (username=kibana)
+
 # Link
 
 1. Grafana: http://localhost:3100
