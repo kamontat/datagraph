@@ -15,7 +15,7 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/elasticsearch-exporter:latest
     command:
-      - "--es.uri=http://elasticsearch:9200"
+      - "--es.uri=http://remote_monitoring_user:3LO2DgD6LWlEsHhu2VPm@elasticsearch:9200"
     depends_on:
       - elasticsearch
     ports:
@@ -30,18 +30,18 @@ services:
   prometheus:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/prometheus:latest
+    user: root
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus:/prometheus
+      - ./prometheus/data:/prometheus
       - logging:/var/log
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "3200:9090"
   grafana:
     image: gcr.io/the-tokenizer-268111/grafana:latest
+    user: root
     volumes:
-      - ./grafana:/var/lib/grafana
+      - ./grafana/data:/var/lib/grafana
       - logging:/var/log
     depends_on:
       - prometheus
@@ -54,19 +54,35 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/filebeat:latest
     user: root
+    depends_on:
+      - logstash
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
-      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - logging:/var/log
+  metricbeat:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/metricbeat:latest
+    user: root
+    depends_on:
+      - elasticsearch
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
       - logging:/var/log
   logstash:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/logstash:latest
     volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
       - logging:/var/log
     depends_on:
-      - filebeat
+      - elasticsearch
     ports:
       - "3800:9600"
       - "3801:5044"
@@ -74,19 +90,20 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/elasticsearch:latest
     volumes:
-      # - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12
+      - ./elasticsearch/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
       - logging:/var/log
     environment:
       discovery.type: "single-node"
-    depends_on:
-      - logstash
     ports:
       - "3201:9200"
       - "3202:9300"
   kibana:
     image: gcr.io/the-tokenizer-268111/kibana:latest
     volumes:
-      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
       - logging:/var/log
     depends_on:
       - elasticsearch
