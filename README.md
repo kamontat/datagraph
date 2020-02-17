@@ -18,7 +18,8 @@
 # Update Elasticsearch password
 
 1. Generate password for all exist user: `bin/elasticsearch-setup-passwords auto` (in elasticsearch container)
-2. Set all password environment in `docker-compose.yml`
+2. Set password in `elasticsearch-exporter`
+3. Set all password environment in `docker-compose.yml`
    1. set `$ESPW_BEAT` (username=beats_system)
    2. set `$ESPW_LOGSTASH_INTERNAL` (username=logstash_internal)
    3. set `$ESPW_LOGSTASH` (username=logstash_system)
