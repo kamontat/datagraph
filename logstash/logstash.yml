@@ -1,2 +1,2 @@
-xpack.monitoring.elasticsearch.username: logstash_system
+xpack.monitoring.elasticsearch.username: logstash_internal
 xpack.monitoring.elasticsearch.password: ${ESPW_LOGSTASH}

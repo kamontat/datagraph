@@ -82,8 +82,7 @@ services:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/logstash:latest
     environment:
-      ESPW_LOGSTASH: "xjzfiXTpZU2E7kQ2txwc"
-      ESPW_LOGSTASH_INTERNAL: "ALtC9FPwEvowqgGh2Nyv"
+      ESPW_LOGSTASH: "ALtC9FPwEvowqgGh2Nyv"
     volumes:
       - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
