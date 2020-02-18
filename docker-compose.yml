@@ -23,14 +23,15 @@ services:
   prometheus:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/prometheus:latest
+    user: "1000:1000"
     volumes:
       - ./prometheus/data:/prometheus
       - logging:/var/log
     configs:
       - source: prometheus_config
         target: /etc/prometheus/prometheus.yml
-        uid: '1000'
-        gid: '1000'
+        uid: "1000"
+        gid: "1000"
         mode: 0440
     ports:
       - "3200:9090"
@@ -57,8 +58,8 @@ services:
     configs:
       - source: elasticsearch_config
         target: /usr/share/elasticsearch/config/elasticsearch.yml
-        uid: '1000'
-        gid: '1000'
+        uid: "1000"
+        gid: "1000"
         mode: 0440
     environment:
       discovery.type: "single-node"
@@ -80,8 +81,8 @@ services:
     configs:
       - source: filebeat_config
         target: /usr/share/filebeat/filebeat.yml
-        uid: '0'
-        gid: '0'
+        uid: "0"
+        gid: "0"
         mode: 0440
   metricbeat:
     restart: on-failure
@@ -100,8 +101,8 @@ services:
     configs:
       - source: metricbeat_config
         target: /usr/share/metricbeat/metricbeat.yml
-        uid: '0'
-        gid: '0'
+        uid: "0"
+        gid: "0"
         mode: 0440
   kibana:
     image: gcr.io/the-tokenizer-268111/kibana:latest
@@ -122,7 +123,7 @@ configs:
     file: ./elasticsearch/elasticsearch.yml
   filebeat_config:
     file: ./filebeat.yml
-  mtricbeat_config:
+  metricbeat_config:
     file: ./metricbeat.yml
   kibana_config:
     file: ./kibana/kibana.yml
