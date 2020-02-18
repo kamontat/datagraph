@@ -1,16 +1,9 @@
-version: "3"
+version: "3.7"
 
 volumes:
   logging:
 
 services:
-  node-exporter:
-    restart: on-failure
-    image: gcr.io/the-tokenizer-268111/node-exporter:latest
-    volumes:
-      - logging:/var/log
-    ports:
-      - "3502:9100"
   elasticsearch-exporter:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/elasticsearch-exporter:latest
@@ -30,16 +23,19 @@ services:
   prometheus:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/prometheus:latest
-    user: root
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/data:/prometheus
       - logging:/var/log
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+        uid: '1000'
+        gid: '1000'
+        mode: 0440
     ports:
       - "3200:9090"
   grafana:
     image: gcr.io/the-tokenizer-268111/grafana:latest
-    user: root
     volumes:
       - ./grafana/data:/var/lib/grafana
       - logging:/var/log
@@ -50,6 +46,25 @@ services:
       GF_SERVER_ROOT_URL: "http://34.69.181.155:3100"
     ports:
       - "3100:3100"
+  elasticsearch:
+    restart: on-failure
+    image: gcr.io/the-tokenizer-268111/elasticsearch:latest
+    volumes:
+      - ./elasticsearch/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12
+      - ./elasticsearch/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - logging:/var/log
+    configs:
+      - source: elasticsearch_config
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        uid: '1000'
+        gid: '1000'
+        mode: 0440
+    environment:
+      discovery.type: "single-node"
+    ports:
+      - "3201:9200"
+      - "3202:9300"
   filebeat:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/filebeat:latest
@@ -57,12 +72,17 @@ services:
     environment:
       ESPW_FILEBEAT: "3mEAdNEcqprff2VCwCHG"
     depends_on:
-      - logstash
+      - elasticsearch
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
-      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - logging:/var/log
+    configs:
+      - source: filebeat_config
+        target: /usr/share/filebeat/filebeat.yml
+        uid: '0'
+        gid: '0'
+        mode: 0440
   metricbeat:
     restart: on-failure
     image: gcr.io/the-tokenizer-268111/metricbeat:latest
@@ -76,37 +96,13 @@ services:
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
       - /proc:/hostfs/proc:ro
       - /:/hostfs:ro
-      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
       - logging:/var/log
-  logstash:
-    restart: on-failure
-    image: gcr.io/the-tokenizer-268111/logstash:latest
-    environment:
-      ESPW_LOGSTASH: "ALtC9FPwEvowqgGh2Nyv"
-    volumes:
-      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./logstash/data:/usr/share/logstash/data
-      - logging:/var/log
-    depends_on:
-      - elasticsearch
-    ports:
-      - "3800:9600"
-      - "3801:5044"
-  elasticsearch:
-    restart: on-failure
-    image: gcr.io/the-tokenizer-268111/elasticsearch:latest
-    volumes:
-      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ./elasticsearch/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12
-      - ./elasticsearch/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
-      - ./elasticsearch/data:/usr/share/elasticsearch/data
-      - logging:/var/log
-    environment:
-      discovery.type: "single-node"
-    ports:
-      - "3201:9200"
-      - "3202:9300"
+    configs:
+      - source: metricbeat_config
+        target: /usr/share/metricbeat/metricbeat.yml
+        uid: '0'
+        gid: '0'
+        mode: 0440
   kibana:
     image: gcr.io/the-tokenizer-268111/kibana:latest
     volumes:
@@ -118,3 +114,15 @@ services:
       - elasticsearch
     ports:
       - "3101:5601"
+
+configs:
+  prometheus_config:
+    file: ./prometheus/prometheus.yml
+  elasticsearch_config:
+    file: ./elasticsearch/elasticsearch.yml
+  filebeat_config:
+    file: ./filebeat.yml
+  mtricbeat_config:
+    file: ./metricbeat.yml
+  kibana_config:
+    file: ./kibana/kibana.yml

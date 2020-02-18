@@ -21,7 +21,6 @@ ENV DEBUG_HIDE_DATE=false
 ENV DEBUG_COLORS=false
 
 RUN mkdir -p /etc/onuser
-
 WORKDIR /etc/onuser
 
 COPY ./dist/index.js /etc/onuser/index.js

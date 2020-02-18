@@ -1,7 +1,7 @@
 filebeat.config:
   modules:
     path: ${path.config}/modules.d/*.yml
-    reload.enabled: false
+    reload.enabled: true
 
 filebeat.autodiscover:
   providers:
@@ -11,8 +11,10 @@ filebeat.autodiscover:
 processors:
   - add_cloud_metadata: ~
 
-output.logstash:
-  hosts: ["logstash:5044"]
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  username: "filebeat_internal"
+  password: "${ESPW_FILEBEAT}"
 
 setup.kibana:
   host: "kibana:5601"

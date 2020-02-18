@@ -1,2 +1,0 @@
-xpack.monitoring.elasticsearch.username: logstash_internal
-xpack.monitoring.elasticsearch.password: ${ESPW_LOGSTASH}
