@@ -122,8 +122,8 @@ configs:
   elasticsearch_config:
     file: ./elasticsearch/elasticsearch.yml
   filebeat_config:
-    file: ./filebeat.yml
+    file: ./beat/filebeat.yml
   metricbeat_config:
-    file: ./metricbeat.yml
+    file: ./beat/metricbeat.yml
   kibana_config:
     file: ./kibana/kibana.yml
