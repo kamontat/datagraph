@@ -3,6 +3,7 @@ import Server from "./server";
 import Logger, { _Logger } from "./logger";
 import { T, O } from "./utils";
 import Prometheus from "./prom";
+import Parser from "./parser";
 
 const pjson = require("../package.json");
 
@@ -12,10 +13,32 @@ const logger = Logger.namespace("server");
 logger.debug("Starting application...");
 logger.debug(JSON.stringify(pjson));
 
-const paymentplus_host = O.ption(process.env.PAYMENTPLUS_HOST).getOrElse("paymentplus.heroapp.dev");
-const paymentplus_path = O.ption(process.env.PAYMENTPLUS_PATH).getOrElse("/api/online-users/?format=json");
-const paymentplus_auth_username = O.ption(process.env.PAYMENTPLUS_AUTH_USERNAME).getOrElse("admin");
-const paymentplus_auth_password = O.ption(process.env.PAYMENTPLUS_AUTH_PASSWORD).getOrElse("password");
+interface RequestData {
+  host: string;
+  path: string;
+  auth: {
+    username: string;
+    password: string;
+  };
+}
+
+const production: RequestData = {
+  host: O.ption(process.env.PAYMENTPLUS_HOST).getOrElse("paymentplus.heroapp.dev"),
+  path: O.ption(process.env.PAYMENTPLUS_PATH).getOrElse("/api/online-users/?format=json"),
+  auth: {
+    username: O.ption(process.env.PAYMENTPLUS_AUTH_USERNAME).getOrElse("admin"),
+    password: O.ption(process.env.PAYMENTPLUS_AUTH_PASSWORD).getOrElse("admin")
+  }
+};
+
+const staging: RequestData = {
+  host: O.ption(process.env.PAYMENTPLUS_STAGING_HOST).getOrElse("paymentplus.heroapp.dev"),
+  path: O.ption(process.env.PAYMENTPLUS_STAGING_PATH).getOrElse("/api/online-users/?format=json"),
+  auth: {
+    username: O.ption(process.env.PAYMENTPLUS_STAGING_AUTH_USERNAME).getOrElse("admin"),
+    password: O.ption(process.env.PAYMENTPLUS_STAGING_AUTH_PASSWORD).getOrElse("admin")
+  }
+};
 
 const host = O.ption(process.env.HOST).getOrElse("0.0.0.0");
 const port = T.ry(() => parseInt(O.ption(process.env.PORT).getOrElse(""))).getOrElse(1234);
@@ -23,11 +46,13 @@ const port = T.ry(() => parseInt(O.ption(process.env.PORT).getOrElse(""))).getOr
 const prom = new Prometheus({
   paymentplus_online_user: Prometheus.Gauge({
     name: "paymentplus_online_user_count",
-    help: "currently online user in paymentplus"
+    help: "currently online user in paymentplus",
+    labelNames: ["env"]
   }),
   paymentplus_error: Prometheus.Gauge({
     name: "paymentplus_system_failure",
-    help: "paymentplus system failure"
+    help: "paymentplus system failure",
+    labelNames: ["env"]
   })
 });
 
@@ -44,29 +69,49 @@ const server = new Server((req, res) => {
   }
 
   const request = new Request({
-    hostname: `${paymentplus_host}`,
-    path: `${paymentplus_path}`,
-    auth: `${paymentplus_auth_username}:${paymentplus_auth_password}`
+    hostname: `${production.host}`,
+    path: `${production.path}`,
+    auth: `${production.auth.username}:${production.auth.password}`
   });
 
-  request.make().then(data => {
-    T.ry(() => {
-      const trycatch = T.ry(() => JSON.parse(data));
-      const response: { count: number } = trycatch.getOrElse({ count: 0 });
-      const error = trycatch.failed() ? 1 : 0;
+  const requestStaging = new Request({
+    hostname: `${staging.host}`,
+    path: `${staging.path}`,
+    auth: `${staging.auth.username}:${staging.auth.password}`
+  });
 
-      if (error === 1) logger.error("received error report from paymentplus service");
+  request
+    .make()
+    .then(data => {
+      return requestStaging.make().then(data2 => {
+        return new Promise<{ prod: any; stag: any }>(res => res({ prod: data, stag: data2 }));
+      });
+    })
+    .then(({ prod, stag }) => {
+      T.ry(() => {
+        const parser = new Parser(logger);
 
-      prom.get("paymentplus_online_user").set(response.count, new Date());
-      prom.get("paymentplus_error").set(error, new Date());
+        const production = parser.parse(prod, "paymentplus production");
+        const staging = parser.parse(stag, "paymentplus staging");
 
-      res.writeHead(200, { "Content-Type": prom.contentType });
-      res.end(prom.export());
-    }).catch(() => {
+        prom.get("paymentplus_online_user").set({ env: "production" }, production.user.count, new Date());
+        prom.get("paymentplus_error").set({ env: "production" }, production.status ? 0 : 1, new Date());
+
+        prom.get("paymentplus_online_user").set({ env: "staging" }, staging.user.count, new Date());
+        prom.get("paymentplus_error").set({ env: "staging" }, staging.status ? 0 : 1, new Date());
+
+        res.writeHead(200, { "Content-Type": prom.contentType });
+        res.end(prom.export());
+      }).catch(() => {
+        res.writeHead(200, { "Content-Type": prom.contentType });
+        res.end(prom.export());
+      });
+    })
+    .catch(e => {
+      logger.error(e);
       res.writeHead(200, { "Content-Type": prom.contentType });
       res.end(prom.export());
     });
-  });
 });
 
 server.start(host, port).then(({ host, port }) => {

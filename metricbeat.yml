@@ -11,6 +11,8 @@ metricbeat.autodiscover:
 
 metricbeat.modules:
 - module: docker
+  enabled: true
+  period: 10s
   metricsets:
     - "container"
     - "cpu"
@@ -21,8 +23,6 @@ metricbeat.modules:
     - "memory"
     - "network"
   hosts: ["unix:///var/run/docker.sock"]
-  period: 10s
-  enabled: true
 
 processors:
   - add_cloud_metadata: ~
