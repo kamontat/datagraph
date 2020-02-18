@@ -1,0 +1,32 @@
+version: 4
+commit:
+  keys:
+    - type: feat
+      value: Introducing new features.
+    - type: impr
+      value: Improving user experience / usability / reliablity.
+    - type: fix
+      value: Fixing a bug.
+    - type: refac
+      value: A code change that neither fixes a bug nor adds a feature.
+    - type: chore
+      value: Other changes that don't modify src or test files.
+  scopes:
+    - type: onuser
+      value: Onuser service
+    - type: grafana
+      value: Grafana service
+    - type: prometheus
+      value: Prometheus service
+    - type: filebeat
+      value: Filebeat service
+    - type: metricbeat
+      value: Metricbeat service
+    - type: elasticsearch
+      value: Elasticsearch service
+    - type: kibana
+      value: Kibana service
+    - type: docker
+      value: Docker
+    - type: docs
+      value: Documentation
