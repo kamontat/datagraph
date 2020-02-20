@@ -58,7 +58,7 @@ output.elasticsearch:
 
 setup:
   dashboards:
-    enabled: true
+    enabled: false
   kibana:
     host: "kibana:5601"
     username: "${ESUN_HEARTBEAT}"
