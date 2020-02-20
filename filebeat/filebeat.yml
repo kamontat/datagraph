@@ -19,10 +19,13 @@ output.elasticsearch:
   username: "${ESUN_FILEBEAT}"
   password: "${ESPW_FILEBEAT}"
 
-setup.kibana:
-  host: "kibana:5601"
-  username: "${ESUN_FILEBEAT}"
-  password: "${ESPW_FILEBEAT}"
+setup:
+  dashboards:
+    enabled: true
+  kibana:
+    host: "kibana:5601"
+    username: "${ESUN_HEARTBEAT}"
+    password: "${ESPW_HEARTBEAT}"
 
 http:
   enabled: true

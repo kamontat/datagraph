@@ -56,10 +56,13 @@ output.elasticsearch:
   username: "${ESUN_HEARTBEAT}"
   password: "${ESPW_HEARTBEAT}"
 
-setup.kibana:
-  host: "kibana:5601"
-  username: "${ESUN_HEARTBEAT}"
-  password: "${ESPW_HEARTBEAT}"
+setup:
+  dashboards:
+    enabled: true
+  kibana:
+    host: "kibana:5601"
+    username: "${ESUN_HEARTBEAT}"
+    password: "${ESPW_HEARTBEAT}"
 
 http:
   enabled: true
