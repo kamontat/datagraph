@@ -14,6 +14,3 @@ xpack:
         truststore:
           path: elastic-certificates.p12
           type: PKCS12
-    authc:
-      api_key:
-        enabled: true

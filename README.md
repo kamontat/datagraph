@@ -5,9 +5,11 @@
   - [Grafana](#grafana)
   - [Elasticsearch](#elasticsearch)
 - [DevOps Stack](#devops-stack)
-- [FAQ](#faq)
-- [External links](#external-links)
-- [Internal links](#internal-links)
+- [Miscellaneous](#miscellaneous)
+  - [Links](#links)
+    - [External](#external)
+    - [Internal](#internal)
+  - [FAQ](#faq)
 - [Credit](#credit)
 
 ## Setup
@@ -63,12 +65,15 @@ This section is for setting whole stack up
 8. `elasticsearch`: **Searching and analyze data realtime** is one of a beat services in ELK Stack
 9.  `kibana`: **Visualize elasticsearch data** is one of a beat services in ELK Stack
 
-## FAQ
+## Miscellaneous
 
-1. [filebeat.yml](filebeat.yml) and [metricbeat.yml](metricbeat.yml) must own by root
-2. every data directory must call `sudo chown -R 1000:1000 data`
+### Links
 
-## External links
+This is a links to open the web ui or apis in this stack
+
+#### External
+
+External mean access outside of docker components
 
 1. Grafana: http://localhost:3100
 2. Kibana: http://localhost:3101
@@ -77,16 +82,24 @@ This section is for setting whole stack up
 5. Onuser exporter: http://localhost:3501/metrics
 6. Elasticsearch exporter: http://localhost:3502/metrics
 
-## Internal links
+#### Internal
+
+Internal mean access inside docker components
 
 1. Grafana: http://grafana:3100
 2. Kibana: http://kibana:5601
 3. Prometheus: http://prometheus:9090
 4. Elasticsearch: http://elasticsearch:9200
-5. Onuser exporter: http://online-user:1234/metrics
+5. Onuser exporter: http://onuser:1234/metrics
 6. Elasticsearch exporter: http://elasticsearch-exporter:9114/metrics
+
+### FAQ
+
+1. [filebeat.yml](filebeat.yml) and [metricbeat.yml](metricbeat.yml) must own by root
+2. every data directory must call `sudo chown -R 1000:1000 data`
 
 ## Credit
 
-Author: [Kamontat Chantrachirathumrong](https://kamontat.net)
-Since: Feb 14, 2020
+1. Author: [Kamontat Chantrachirathumrong](https://kamontat.net)
+2. Since: Feb 14, 2020
+3. License: [MIT](https://opensource.org/licenses/MIT)

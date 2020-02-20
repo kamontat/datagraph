@@ -5443,7 +5443,7 @@ module.exports = v4;
 /*! exports provided: name, version, main, author, license, private, dependencies, devDependencies, scripts, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"onuser\",\"version\":\"1.1.1\",\"main\":\"index.ts\",\"author\":\"Kamontat Chantrachirathumrong\",\"license\":\"MIT\",\"private\":true,\"dependencies\":{\"pm2\":\"4.2.3\",\"prom-client\":\"11.5.3\",\"uuid\":\"3.4.0\"},\"devDependencies\":{\"@types/debug\":\"4.1.5\",\"@types/node\":\"13.7.1\",\"@types/uuid\":\"3.4.7\",\"debug\":\"4.1.1\",\"ts-loader\":\"6.2.1\",\"typescript\":\"3.7.5\",\"webpack\":\"4.41.6\",\"webpack-cli\":\"3.3.11\"},\"scripts\":{\"compile\":\"webpack\",\"start\":\"node ./dist/index.js\",\"docker\":\"docker build --tag gcr.io/the-tokenizer-268111/onuser .\",\"deploy:docker\":\"docker push gcr.io/the-tokenizer-268111/onuser\"}}");
+module.exports = JSON.parse("{\"name\":\"onuser\",\"version\":\"1.2.0\",\"main\":\"index.ts\",\"author\":\"Kamontat Chantrachirathumrong\",\"license\":\"MIT\",\"private\":true,\"dependencies\":{\"pm2\":\"4.2.3\",\"prom-client\":\"11.5.3\",\"uuid\":\"3.4.0\"},\"devDependencies\":{\"@types/debug\":\"4.1.5\",\"@types/node\":\"13.7.1\",\"@types/uuid\":\"3.4.7\",\"debug\":\"4.1.1\",\"ts-loader\":\"6.2.1\",\"typescript\":\"3.7.5\",\"webpack\":\"4.41.6\",\"webpack-cli\":\"3.3.11\"},\"scripts\":{\"compile\":\"webpack\",\"start\":\"node ./dist/index.js\",\"docker\":\"docker build --tag gcr.io/the-tokenizer-268111/onuser .\",\"deploy:docker\":\"docker push gcr.io/the-tokenizer-268111/onuser\"}}");
 
 /***/ }),
 

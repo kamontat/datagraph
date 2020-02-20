@@ -1,1 +1,4 @@
 .DS_Store
+
+# You must generate by yourself: ./scripts/build-compose.sh
+docker-compose.yml

@@ -1,0 +1,34 @@
+heartbeat.monitors:
+  - type: http
+    schedule: "@every 5s"
+    urls:
+      - http://elasticsearch:9200
+      - http://kibana:5601
+  - type: icmp
+    schedule: "@every 5s"
+    hosts:
+      - elasticsearch
+      - kibana
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  username: "${ESUN_HEARTBEAT}"
+  password: "${ESPW_HEARTBEAT}"
+
+setup.kibana:
+  host: "kibana:5601"
+  username: "${ESUN_HEARTBEAT}"
+  password: "${ESPW_HEARTBEAT}"
+
+http:
+  enabled: true
+  port: 5067
+
+monitoring:
+  enabled: false

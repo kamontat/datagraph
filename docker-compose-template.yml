@@ -1,0 +1,259 @@
+version: "3.7"
+
+# services order
+#  image:        ...
+#  hostname:     ...
+#  user:         ...
+#  command:      ...
+#  labels:       ...
+#  volumes:      ...
+#  environment:  ...
+#  env_file:     ...
+#  networks:     ...
+#  ports:        ...
+#  healthcheck:  ...
+#  deploy:       ...
+
+services:
+  onuser:
+    image: gcr.io/the-tokenizer-268111/onuser:latest
+    hostname: onuser
+    labels:
+      service.name: onuser
+      service.category: metrics
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+    environment:
+      - DEBUG="*"
+    ports:
+      - "3501:1234"
+    healthcheck:
+      test: curl -f http://localhost:1234/metrics
+      interval: 1m
+      timeout: 15s
+      retries: 3
+      start_period: 30s
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+  prometheus:
+    image: gcr.io/the-tokenizer-268111/prometheus:latest
+    hostname: prometheus
+    user: "1000:1000"
+    labels:
+      service.name: prometheus
+      service.category: database
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - ./prometheus/data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "3200:9090"
+    healthcheck:
+      test: curl -f http://localhost:9090/graph
+      interval: 1m
+      timeout: 20s
+      retries: 1
+      start_period: 2m
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 512M
+  grafana:
+    image: gcr.io/the-tokenizer-268111/grafana:latest
+    hostname: grafana
+    labels:
+      service.name: grafana
+      service.category: monitor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - ./grafana/data:/var/lib/grafana
+    environment:
+      GF_SERVER_HTTP_PORT: "3100"
+      GF_SERVER_ROOT_URL: "http://34.69.181.155:3100"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3100:3100"
+    healthcheck:
+      test: curl -f http://localhost:3100/login
+      interval: 30s
+      timeout: 3s
+      retries: 2
+      start_period: 2m
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+  elasticsearch:
+    image: gcr.io/the-tokenizer-268111/elasticsearch:latest
+    hostname: elasticsearch
+    labels:
+      service.name: elasticsearch
+      service.category: database
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - ./elasticsearch/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12
+      - ./elasticsearch/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./elasticsearch/auth/users:/usr/share/elasticsearch/config/users
+      - ./elasticsearch/auth/users_roles:/usr/share/elasticsearch/config/users_roles
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      discovery.type: "single-node"
+      ES_PATH_CONF: "/usr/share/elasticsearch/config"
+      ELASTIC_PASSWORD: "${ESPW_ELASTIC}"
+    env_file:
+      - .env
+    ports:
+      - "3201:9200"
+      - "3202:9300"
+    healthcheck:
+      test: curl -f -u "${ESUN_ELASTIC}:${ESPW_ELASTIC}" http://localhost:9200
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 1m
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 1024M
+  filebeat:
+    image: gcr.io/the-tokenizer-268111/filebeat:latest
+    hostname: filebeat
+    user: root
+    labels:
+      service.name: filebeat
+      service.category: collector
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    env_file:
+      - .env
+    ports:
+      - "3800:5066"
+    healthcheck:
+      test: curl -f http://localhost:5066
+      interval: 30s
+      timeout: 3s
+      retries: 2
+      start_period: 30s
+    deploy:
+      mode: global
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+  metricbeat:
+    image: gcr.io/the-tokenizer-268111/metricbeat:latest
+    hostname: metricbeat
+    user: root
+    command: ["-system.hostfs=/hostfs"]
+    labels:
+      service.name: metricbeat
+      service.category: collector
+    volumes:
+      - /proc:/hostfs/proc:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /:/hostfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - ./metricbeat/data:/usr/share/metricbeat/data
+      - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    env_file:
+      - .env
+    healthcheck:
+      test: curl -f http://localhost:5065
+      interval: 30s
+      timeout: 3s
+      retries: 2
+      start_period: 3
+    deploy:
+      mode: global
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+  heartbeat:
+    image: gcr.io/the-tokenizer-268111/heartbeat:latest
+    hostname: heartbeat
+    user: root
+    labels:
+      service.name: heartbeat
+      service.category: collector
+    volumes:
+      - ./heartbeat/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+    env_file:
+      - .env
+    healthcheck:
+      test: curl -f http://localhost:5067
+      interval: 30s
+      timeout: 3s
+      retries: 2
+      start_period: 3
+    deploy:
+      mode: global
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+  kibana:
+    image: gcr.io/the-tokenizer-268111/kibana:latest
+    hostname: kibana
+    labels:
+      service.name: kibana
+      service.category: monitor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    env_file:
+      - .env
+    ports:
+      - "3101:5601"
+    healthcheck:
+      test: curl -f http://0.0.0.0:5601
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: vip
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 512M

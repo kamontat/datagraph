@@ -1,0 +1,57 @@
+metricbeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: true
+
+metricbeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+metricbeat.modules:
+  - module: docker
+    enabled: true
+    period: 10s
+    metricsets:
+      - "container"
+      - "cpu"
+      - "diskio"
+      - "healthcheck"
+      - "info"
+      - "image"
+      - "memory"
+      - "network"
+    hosts: ["unix:///var/run/docker.sock"]
+  - module: beat
+    enabled: true
+    xpack.enabled: true
+    period: 10s
+    metricsets:
+      - stats
+      - state
+    username: "${ESUN_MONITOR}"
+    password: "${ESPW_MONITOR}"
+    hosts: ["http://filebeat:5066", "http://heartbeat:5067"]
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  username: "${ESUN_METRICBEAT}"
+  password: "${ESPW_METRICBEAT}"
+
+setup.kibana:
+  host: "kibana:5601"
+  username: "${ESUN_METRICBEAT}"
+  password: "${ESPW_METRICBEAT}"
+
+http:
+  enabled: true
+  port: 5065
+
+monitoring:
+  enabled: false

@@ -1,129 +1,313 @@
-version: "3.7"
-
-volumes:
-  logging:
+########################################
+# Built by docker-compose-template.yml #
+########################################
 
 services:
-  elasticsearch-exporter:
-    restart: on-failure
-    image: gcr.io/the-tokenizer-268111/elasticsearch-exporter:latest
-    command:
-      - "--es.uri=http://remote_monitoring_user:hHfIHSeboCNeemqkOumz@elasticsearch:9200"
-    depends_on:
-      - elasticsearch
-    ports:
-      - "3503:9114"
-  online-user:
-    restart: on-failure
-    image: gcr.io/the-tokenizer-268111/onuser:latest
-    volumes:
-      - logging:/var/log
-    ports:
-      - "3501:1234"
-  prometheus:
-    restart: on-failure
-    image: gcr.io/the-tokenizer-268111/prometheus:latest
-    user: "1000:1000"
-    volumes:
-      - ./prometheus/data:/prometheus
-      - logging:/var/log
-    configs:
-      - source: prometheus_config
-        target: /etc/prometheus/prometheus.yml
-        uid: "1000"
-        gid: "1000"
-        mode: 0440
-    ports:
-      - "3200:9090"
-  grafana:
-    image: gcr.io/the-tokenizer-268111/grafana:latest
-    volumes:
-      - ./grafana/data:/var/lib/grafana
-      - logging:/var/log
-    depends_on:
-      - prometheus
-    environment:
-      GF_SERVER_HTTP_PORT: "3100"
-      GF_SERVER_ROOT_URL: "http://34.69.181.155:3100"
-    ports:
-      - "3100:3100"
   elasticsearch:
-    restart: on-failure
+    deploy:
+      endpoint_mode: vip
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 1024M
+    environment:
+      ELASTIC_PASSWORD: MG9ELua7pcNwDpw7FEjB
+      ESPW_ADMIN: WLvF9XKHNg_fZ387Zp9WEnk2a
+      ESPW_ELASTIC: MG9ELua7pcNwDpw7FEjB
+      ESPW_FILEBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_GUEST: guest123
+      ESPW_HEARTBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_KIBANA: n79UZ2fNhPePtrkPLTpe
+      ESPW_METRICBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_MONITOR: 8i4BaoV9digwVExBBFcr
+      ESUN_ADMIN: admin
+      ESUN_ELASTIC: elastic
+      ESUN_FILEBEAT: filebeat_internal
+      ESUN_GUEST: guest
+      ESUN_HEARTBEAT: heartbeat_internal
+      ESUN_KIBANA: kibana
+      ESUN_METRICBEAT: metricbeat_internal
+      ESUN_MONITOR: remote_monitoring_user
+      ES_PATH_CONF: /usr/share/elasticsearch/config
+      discovery.type: single-node
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 1m
+      test: curl -f -u "elastic:MG9ELua7pcNwDpw7FEjB" http://localhost:9200
+      timeout: 3s
+    hostname: elasticsearch
     image: gcr.io/the-tokenizer-268111/elasticsearch:latest
-    volumes:
-      - ./elasticsearch/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12
-      - ./elasticsearch/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
-      - ./elasticsearch/data:/usr/share/elasticsearch/data
-      - logging:/var/log
-    configs:
-      - source: elasticsearch_config
-        target: /usr/share/elasticsearch/config/elasticsearch.yml
-        uid: "1000"
-        gid: "1000"
-        mode: 0440
-    environment:
-      discovery.type: "single-node"
+    labels:
+      service.category: database
+      service.name: elasticsearch
     ports:
-      - "3201:9200"
-      - "3202:9300"
+    - published: 3201
+      target: 9200
+    - published: 3202
+      target: 9300
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    - /Users/kchantrachir/Desktop/Personal/graph/elasticsearch/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12:rw
+    - /Users/kchantrachir/Desktop/Personal/graph/elasticsearch/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:rw
+    - /Users/kchantrachir/Desktop/Personal/graph/elasticsearch/auth/users:/usr/share/elasticsearch/config/users:rw
+    - /Users/kchantrachir/Desktop/Personal/graph/elasticsearch/auth/users_roles:/usr/share/elasticsearch/config/users_roles:rw
+    - /Users/kchantrachir/Desktop/Personal/graph/elasticsearch/data:/usr/share/elasticsearch/data:rw
+    - /Users/kchantrachir/Desktop/Personal/graph/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:rw
   filebeat:
-    restart: on-failure
+    deploy:
+      endpoint_mode: vip
+      mode: global
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    environment:
+      ESPW_ADMIN: WLvF9XKHNg_fZ387Zp9WEnk2a
+      ESPW_ELASTIC: MG9ELua7pcNwDpw7FEjB
+      ESPW_FILEBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_GUEST: guest123
+      ESPW_HEARTBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_KIBANA: n79UZ2fNhPePtrkPLTpe
+      ESPW_METRICBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_MONITOR: 8i4BaoV9digwVExBBFcr
+      ESUN_ADMIN: admin
+      ESUN_ELASTIC: elastic
+      ESUN_FILEBEAT: filebeat_internal
+      ESUN_GUEST: guest
+      ESUN_HEARTBEAT: heartbeat_internal
+      ESUN_KIBANA: kibana
+      ESUN_METRICBEAT: metricbeat_internal
+      ESUN_MONITOR: remote_monitoring_user
+    healthcheck:
+      interval: 30s
+      retries: 2
+      start_period: 30s
+      test: curl -f http://localhost:5066
+      timeout: 3s
+    hostname: filebeat
     image: gcr.io/the-tokenizer-268111/filebeat:latest
-    user: root
-    environment:
-      ESPW_FILEBEAT: "3mEAdNEcqprff2VCwCHG"
-    depends_on:
-      - elasticsearch
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
-      - logging:/var/log
-    configs:
-      - source: filebeat_config
-        target: /usr/share/filebeat/filebeat.yml
-        uid: "0"
-        gid: "0"
-        mode: 0440
-  metricbeat:
-    restart: on-failure
-    image: gcr.io/the-tokenizer-268111/metricbeat:latest
-    user: root
-    environment:
-      ESPW_METRICBEAT: "YP4IDo3cZ2NNxqGRUv0I"
-    depends_on:
-      - elasticsearch
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
-      - /proc:/hostfs/proc:ro
-      - /:/hostfs:ro
-      - logging:/var/log
-    configs:
-      - source: metricbeat_config
-        target: /usr/share/metricbeat/metricbeat.yml
-        uid: "0"
-        gid: "0"
-        mode: 0440
-  kibana:
-    image: gcr.io/the-tokenizer-268111/kibana:latest
-    volumes:
-      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-      - logging:/var/log
-    environment:
-      ESPW_KIBANA: "mYw11SpuBafbxnyGsv5b"
-    depends_on:
-      - elasticsearch
+    labels:
+      service.category: collector
+      service.name: filebeat
     ports:
-      - "3101:5601"
+    - published: 3800
+      target: 5066
+    user: root
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    - /Users/kchantrachir/Desktop/Personal/graph/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw
+  grafana:
+    deploy:
+      endpoint_mode: vip
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    environment:
+      GF_SERVER_HTTP_PORT: '3100'
+      GF_SERVER_ROOT_URL: http://34.69.181.155:3100
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    healthcheck:
+      interval: 30s
+      retries: 2
+      start_period: 2m
+      test: curl -f http://localhost:3100/login
+      timeout: 3s
+    hostname: grafana
+    image: gcr.io/the-tokenizer-268111/grafana:latest
+    labels:
+      service.category: monitor
+      service.name: grafana
+    ports:
+    - published: 3100
+      target: 3100
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    - /Users/kchantrachir/Desktop/Personal/graph/grafana/data:/var/lib/grafana:rw
+  heartbeat:
+    deploy:
+      endpoint_mode: vip
+      mode: global
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    environment:
+      ESPW_ADMIN: WLvF9XKHNg_fZ387Zp9WEnk2a
+      ESPW_ELASTIC: MG9ELua7pcNwDpw7FEjB
+      ESPW_FILEBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_GUEST: guest123
+      ESPW_HEARTBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_KIBANA: n79UZ2fNhPePtrkPLTpe
+      ESPW_METRICBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_MONITOR: 8i4BaoV9digwVExBBFcr
+      ESUN_ADMIN: admin
+      ESUN_ELASTIC: elastic
+      ESUN_FILEBEAT: filebeat_internal
+      ESUN_GUEST: guest
+      ESUN_HEARTBEAT: heartbeat_internal
+      ESUN_KIBANA: kibana
+      ESUN_METRICBEAT: metricbeat_internal
+      ESUN_MONITOR: remote_monitoring_user
+    hostname: heartbeat
+    image: gcr.io/the-tokenizer-268111/heartbeat:latest
+    labels:
+      service.category: collector
+      service.name: heartbeat
+    user: root
+    volumes:
+    - /Users/kchantrachir/Desktop/Personal/graph/heartbeat/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:rw
+  kibana:
+    deploy:
+      endpoint_mode: vip
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 512M
+    environment:
+      ESPW_ADMIN: WLvF9XKHNg_fZ387Zp9WEnk2a
+      ESPW_ELASTIC: MG9ELua7pcNwDpw7FEjB
+      ESPW_FILEBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_GUEST: guest123
+      ESPW_HEARTBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_KIBANA: n79UZ2fNhPePtrkPLTpe
+      ESPW_METRICBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_MONITOR: 8i4BaoV9digwVExBBFcr
+      ESUN_ADMIN: admin
+      ESUN_ELASTIC: elastic
+      ESUN_FILEBEAT: filebeat_internal
+      ESUN_GUEST: guest
+      ESUN_HEARTBEAT: heartbeat_internal
+      ESUN_KIBANA: kibana
+      ESUN_METRICBEAT: metricbeat_internal
+      ESUN_MONITOR: remote_monitoring_user
+    healthcheck:
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      test: curl -f http://0.0.0.0:5601
+      timeout: 5s
+    hostname: kibana
+    image: gcr.io/the-tokenizer-268111/kibana:latest
+    labels:
+      service.category: monitor
+      service.name: kibana
+    ports:
+    - published: 3101
+      target: 5601
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    - /Users/kchantrachir/Desktop/Personal/graph/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
+  metricbeat:
+    command:
+    - -system.hostfs=/hostfs
+    deploy:
+      endpoint_mode: vip
+      mode: global
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    environment:
+      ESPW_ADMIN: WLvF9XKHNg_fZ387Zp9WEnk2a
+      ESPW_ELASTIC: MG9ELua7pcNwDpw7FEjB
+      ESPW_FILEBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_GUEST: guest123
+      ESPW_HEARTBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_KIBANA: n79UZ2fNhPePtrkPLTpe
+      ESPW_METRICBEAT: Mq7h8ygbqrmohKZW6wVB
+      ESPW_MONITOR: 8i4BaoV9digwVExBBFcr
+      ESUN_ADMIN: admin
+      ESUN_ELASTIC: elastic
+      ESUN_FILEBEAT: filebeat_internal
+      ESUN_GUEST: guest
+      ESUN_HEARTBEAT: heartbeat_internal
+      ESUN_KIBANA: kibana
+      ESUN_METRICBEAT: metricbeat_internal
+      ESUN_MONITOR: remote_monitoring_user
+    hostname: metricbeat
+    image: gcr.io/the-tokenizer-268111/metricbeat:latest
+    labels:
+      service.category: collector
+      service.name: metricbeat
+    user: root
+    volumes:
+    - /proc:/hostfs/proc:ro
+    - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+    - /:/hostfs:ro
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    - /Users/kchantrachir/Desktop/Personal/graph/metricbeat/data:/usr/share/metricbeat/data:rw
+    - /Users/kchantrachir/Desktop/Personal/graph/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:rw
+  onuser:
+    deploy:
+      endpoint_mode: vip
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    environment:
+      DEBUG: '"*"'
+    healthcheck:
+      interval: 1m
+      retries: 3
+      start_period: 30s
+      test: curl -f http://localhost:1234/metrics
+      timeout: 15s
+    hostname: onuser
+    image: gcr.io/the-tokenizer-268111/onuser:latest
+    labels:
+      service.category: metrics
+      service.name: onuser
+    ports:
+    - published: 3501
+      target: 1234
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  prometheus:
+    deploy:
+      endpoint_mode: vip
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 512M
+    hostname: prometheus
+    image: gcr.io/the-tokenizer-268111/prometheus:latest
+    labels:
+      service.category: database
+      service.name: prometheus
+    ports:
+    - published: 3200
+      target: 9090
+    user: 1000:1000
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    - /Users/kchantrachir/Desktop/Personal/graph/prometheus/data:/prometheus:rw
+    - /Users/kchantrachir/Desktop/Personal/graph/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:rw
+version: '3.7'
 
-configs:
-  prometheus_config:
-    file: ./prometheus/prometheus.yml
-  elasticsearch_config:
-    file: ./elasticsearch/elasticsearch.yml
-  filebeat_config:
-    file: ./beat/filebeat.yml
-  metricbeat_config:
-    file: ./beat/metricbeat.yml
-  kibana_config:
-    file: ./kibana/kibana.yml
