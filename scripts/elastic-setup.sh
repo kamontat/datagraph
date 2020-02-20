@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.." || exit 1
 
 source "$PWD/.env" || exit 2
 
-host="localhost"
+host="${1:-localhost}"
 port="3201"
 
 __elastic_apis() {
@@ -175,6 +175,12 @@ __elastic_create_user "${ESUN_HEARTBEAT}" "{
   \"full_name\" : \"Heartbeat internal\",
   \"email\" : \"heartbeat@internal.kcnt.info\",
   \"roles\" : [\"heartbeat_writer\",\"beats_admin\",\"beats_system\",\"kibana_admin\",\"kibana_system\"]
+}"
+__elastic_create_user "${ESUN_GRAFANA}" "{
+  \"password\" : \"${ESPW_GRAFANA}\",
+  \"full_name\" : \"grafana\",
+  \"email\" : \"grafana@kcnt.info\",
+  \"roles\":[\"superuser\"]
 }"
 __elastic_create_user "${ESUN_ADMIN}" "{
   \"password\" : \"${ESPW_ADMIN}\",
