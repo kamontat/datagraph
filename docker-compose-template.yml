@@ -243,11 +243,11 @@ services:
     ports:
       - "3101:5601"
     healthcheck:
-      test: curl -f http://0.0.0.0:5601
-      interval: 10s
+      test: wget -q http://localhost:5601/login -O -
+      interval: 1m
       timeout: 5s
-      retries: 5
-      start_period: 20s
+      retries: 3
+      start_period: 1m
     deploy:
       mode: replicated
       replicas: 1
