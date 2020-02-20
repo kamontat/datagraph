@@ -58,7 +58,7 @@ services:
     ports:
       - "3200:9090"
     healthcheck:
-      test: curl -f http://localhost:9090/graph
+      test: wget -q http://localhost:9090/graph -O -
       interval: 1m
       timeout: 20s
       retries: 1
@@ -89,7 +89,7 @@ services:
     ports:
       - "3100:3100"
     healthcheck:
-      test: curl -f http://localhost:3100/login
+      test: wget -q http://localhost:3100/login -O -
       interval: 30s
       timeout: 3s
       retries: 2

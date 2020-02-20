@@ -121,7 +121,7 @@ services:
       interval: 30s
       retries: 2
       start_period: 2m
-      test: curl -f http://localhost:3100/login
+      test: wget -q http://localhost:3100/login -O -
       timeout: 3s
     hostname: grafana
     image: gcr.io/the-tokenizer-268111/grafana:latest
@@ -311,7 +311,7 @@ services:
       interval: 1m
       retries: 1
       start_period: 2m
-      test: curl -f http://localhost:9090/graph
+      test: wget -q http://localhost:9090/graph -O -
       timeout: 20s
     hostname: prometheus
     image: gcr.io/the-tokenizer-268111/prometheus:latest
