@@ -2,6 +2,7 @@
 
 - [Setup](#setup)
   - [Google cloud platform](#google-cloud-platform)
+  - [Docker](#docker)
   - [Grafana](#grafana)
   - [Elasticsearch](#elasticsearch)
 - [DevOps Stack](#devops-stack)
@@ -26,6 +27,12 @@ This section is for setting whole stack up
    3. OS: Container Optimized OS, latest stable version
    4. (maybe) add static ip address to container
 
+### Docker
+
+1. Changes docker images url in `docker-compose`
+2. Run `docker-compose up -d` to initial all docker images and containers
+3. Setup [grafana](#grafana) and [elasticsearch](#elasticsearch)
+
 ### Grafana
 
 1. Add datasource as **Prometheus**
@@ -44,14 +51,9 @@ This section is for setting whole stack up
 
 ### Elasticsearch
 
-1. login to `elasticsearch` running container (`docker exec -it elasticsearch bash`)
-2. Generate password for all exist user: using `bin/elasticsearch-setup-passwords auto` command
-3. Set all password environment in `docker-compose.yml`
-   1. set `$ESPW_FILEBEAT` (username=filebeat_internal)
-   2. set `$ESPW_METRICBEAT` (username=metricbeat_internal)
-   3. set `$ESPW_LOGSTASH_INTERNAL` (username=logstash_internal)
-   4. set `$ESPW_LOGSTASH` (username=logstash_system)
-   5. set `$ESPW_KIBANA` (username=kibana)
+1. Start elasticsearch and make sure that health value in `docker-compose ps` is **healthly**
+2. Run `./scripts/elasticsearch-setup.sh [<host:localhost>]` host is optional argument, default is localhost
+3. You might needs to `docker-compose up -d` again to restart any error container
 
 ## DevOps Stack
 
@@ -63,7 +65,7 @@ This section is for setting whole stack up
 6. `metricbeat`: **Systems and services collector** is one of a beat services in ELK Stack
 7. `heartbeat`: **Systems and services availability collector** is one of a beat services in ELK Stack
 8. `elasticsearch`: **Searching and analyze data realtime** is one of a beat services in ELK Stack
-9.  `kibana`: **Visualize elasticsearch data** is one of a beat services in ELK Stack
+9. `kibana`: **Visualize elasticsearch data** is one of a beat services in ELK Stack
 
 ## Miscellaneous
 
@@ -80,7 +82,6 @@ External mean access outside of docker components
 3. Prometheus: http://localhost:3200
 4. Elasticsearch: http://localhost:3201
 5. Onuser exporter: http://localhost:3501/metrics
-6. Elasticsearch exporter: http://localhost:3502/metrics
 
 #### Internal
 
@@ -91,7 +92,6 @@ Internal mean access inside docker components
 3. Prometheus: http://prometheus:9090
 4. Elasticsearch: http://elasticsearch:9200
 5. Onuser exporter: http://onuser:1234/metrics
-6. Elasticsearch exporter: http://elasticsearch-exporter:9114/metrics
 
 ### FAQ
 
