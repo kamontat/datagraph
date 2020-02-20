@@ -32,3 +32,7 @@ commit:
       value: Docker
     - type: docs
       value: Documentation
+    - type: config
+      value: Configuration or Settings
+    - type: deps
+      value: Dependencies for development
