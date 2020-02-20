@@ -170,7 +170,7 @@ __elastic_create_user "${ESUN_METRICBEAT}" "{
   \"email\" : \"metricbeat@internal.kcnt.info\",
   \"roles\" : [\"metricbeat_writer\",\"beats_admin\",\"beats_system\",\"kibana_admin\",\"kibana_system\"]
 }"
-__elastic_create_user "${ESPW_HEARTBEAT}" "{
+__elastic_create_user "${ESUN_HEARTBEAT}" "{
   \"password\" : \"${ESPW_HEARTBEAT}\",
   \"full_name\" : \"Heartbeat internal\",
   \"email\" : \"heartbeat@internal.kcnt.info\",

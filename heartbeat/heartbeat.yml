@@ -1,14 +1,49 @@
 heartbeat.monitors:
   - type: http
-    schedule: "@every 5s"
-    urls:
-      - http://elasticsearch:9200
+    name: kibana
+    schedule: "@every 10s"
+    hosts:
       - http://kibana:5601
+  - type: http
+    name: grafana
+    schedule: "@every 10s"
+    hosts:
+      - http://grafana:3100
+  - type: http
+    name: prometheus
+    schedule: "@every 10s"
+    hosts:
+      - http://prometheus:9090
+  - type: http
+    name: elasticsearch
+    schedule: "@every 10s"
+    username: "${ESUN_HEARTBEAT}"
+    password: "${ESPW_HEARTBEAT}"
+    hosts:
+      - http://elasticsearch:9200
+  - type: http
+    name: onuser
+    schedule: "@every 10s"
+    hosts:
+      - http://onuser:1234
+  - type: http
+    name: staging paymentplus
+    schedule: "@every 10s"
+    hosts:
+      - http://paymentplus.heroapp.dev:80
+  - type: http
+    name: production paymentplus
+    schedule: "@every 10s"
+    hosts:
+      - http://pttep.users.heroapp.dev:80
   - type: icmp
-    schedule: "@every 5s"
+    schedule: "@every 10s"
     hosts:
       - elasticsearch
       - kibana
+      - prometheus
+      - grafana
+      - onuser
 
 processors:
   - add_host_metadata: ~
