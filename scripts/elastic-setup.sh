@@ -122,6 +122,41 @@ __elastic_create_role "filebeat_reader" '{
   "run_as": [],
   "metadata" : {}
 }'
+__elastic_create_role "heartbeat_writer" '{
+  "cluster":[ 
+    "monitor",
+    "manage_index_templates",
+    "manage_ilm"
+  ],
+  "indices": [
+    {
+      "names": [ "heartbeat-*" ],
+      "privileges":[ "all" ]
+    }
+  ],
+  "applications": [],
+  "run_as": [],
+  "metadata" : {}
+}'
+__elastic_create_role "heartbeat_reader" '{
+  "cluster":[ 
+    "monitor",
+    "manage_index_templates",
+    "manage_ilm"
+  ],
+  "indices": [
+    {
+      "names": [ "heartbeat-*" ],
+      "privileges":[
+        "read",
+        "view_index_metadata"
+      ]
+    }
+  ],
+  "applications": [],
+  "run_as": [],
+  "metadata" : {}
+}'
 
 __elastic_create_user "${ESUN_FILEBEAT}" "{
   \"password\" : \"${ESPW_FILEBEAT}\",
@@ -134,6 +169,12 @@ __elastic_create_user "${ESUN_METRICBEAT}" "{
   \"full_name\" : \"Metricbeat internal\",
   \"email\" : \"metricbeat@internal.kcnt.info\",
   \"roles\" : [\"metricbeat_writer\",\"beats_admin\",\"beats_system\",\"kibana_admin\",\"kibana_system\"]
+}"
+__elastic_create_user "${ESPW_HEARTBEAT}" "{
+  \"password\" : \"${ESPW_HEARTBEAT}\",
+  \"full_name\" : \"Heartbeat internal\",
+  \"email\" : \"heartbeat@internal.kcnt.info\",
+  \"roles\" : [\"heartbeat_writer\",\"beats_admin\",\"beats_system\",\"kibana_admin\",\"kibana_system\"]
 }"
 __elastic_create_user "${ESUN_ADMIN}" "{
   \"password\" : \"${ESPW_ADMIN}\",
