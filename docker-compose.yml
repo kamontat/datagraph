@@ -284,7 +284,7 @@ services:
       interval: 1m
       retries: 3
       start_period: 30s
-      test: curl -f http://localhost:1234/metrics
+      test: wget -q http://localhost:1234/metrics  -O -
       timeout: 15s
     hostname: onuser
     image: gcr.io/the-tokenizer-268111/onuser:latest

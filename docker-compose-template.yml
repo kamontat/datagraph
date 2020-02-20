@@ -29,7 +29,7 @@ services:
     ports:
       - "3501:1234"
     healthcheck:
-      test: curl -f http://localhost:1234/metrics
+      test: wget -q http://localhost:1234/metrics  -O -
       interval: 1m
       timeout: 15s
       retries: 3
