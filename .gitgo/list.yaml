@@ -22,6 +22,8 @@ commit:
       value: Filebeat service
     - type: metricbeat
       value: Metricbeat service
+    - type: heartbeat
+      value: Heartbeat service
     - type: elasticsearch
       value: Elasticsearch service
     - type: kibana
