@@ -2,6 +2,7 @@ version: "3.7"
 
 # services order
 #  image:        ...
+#  restart:      ...
 #  hostname:     ...
 #  user:         ...
 #  command:      ...
@@ -10,8 +11,10 @@ version: "3.7"
 #  environment:  ...
 #  env_file:     ...
 #  networks:     ...
+#  network_mode: ...
 #  ports:        ...
 #  healthcheck:  ...
+#  depends_on:   ...
 #  deploy:       ...
 
 services:
@@ -144,6 +147,7 @@ services:
           memory: 1024M
   filebeat:
     image: gcr.io/the-tokenizer-268111/filebeat:latest
+    restart: on-failure
     hostname: filebeat
     user: root
     labels:
@@ -163,6 +167,8 @@ services:
       timeout: 3s
       retries: 2
       start_period: 30s
+    depends_on:
+      - kibana
     deploy:
       mode: global
       endpoint_mode: vip
@@ -173,6 +179,7 @@ services:
           memory: 64M
   metricbeat:
     image: gcr.io/the-tokenizer-268111/metricbeat:latest
+    restart: on-failure
     hostname: metricbeat
     user: root
     command: ["-system.hostfs=/hostfs"]
@@ -189,12 +196,15 @@ services:
       - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
     env_file:
       - .env
+    network_mode: host
     healthcheck:
       test: curl -f http://localhost:5065
       interval: 30s
       timeout: 3s
       retries: 2
       start_period: 30s
+    depends_on:
+      - kibana
     deploy:
       mode: global
       endpoint_mode: vip
@@ -205,6 +215,7 @@ services:
           memory: 64M
   heartbeat:
     image: gcr.io/the-tokenizer-268111/heartbeat:latest
+    restart: on-failure
     hostname: heartbeat
     user: root
     labels:
@@ -248,6 +259,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 1m
+    depends_on:
+      - elasticsearch
     deploy:
       mode: replicated
       replicas: 1
