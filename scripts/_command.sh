@@ -8,13 +8,13 @@ load_command() {
   for arg in "$@"; do
     if is_command "${arg}"; then
       if test -z "$FIRST"; then
-        debug "command" "setting first command to ${arg}"
+        debug "command" "set FIRST=${arg}"
         FIRST="${arg}"
       elif test -n "$FIRST" && test -z "$SECOND"; then
-        debug "command" "setting second command to ${arg}"
+        debug "command" "set SECOND=${arg}"
         SECOND="${arg}"
       else
-        debug "command" "setting to subcommand argument to ${arg}"
+        debug "command" "set ARGUMENTS=[${arg}]"
         ARGUMENTS+=("${arg}")
       fi
     else
