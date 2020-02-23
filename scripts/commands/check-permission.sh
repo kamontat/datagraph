@@ -8,6 +8,7 @@ get_permission() {
   # shellcheck disable=SC2207
   arr=($(ls -na "$filename"))
   result="${arr[0]}"
+  [[ "$result" == "-rw--w--wx" ]] && echo 623 && return 0
   [[ "$result" == "-rw-r--r--" ]] && echo 644 && return 0
   [[ "$result" == "drwxr-xr-x" ]] && echo 755 && return 0
   [[ "$result" == "-rwxrwxrwx" ]] && echo 777 && return 0
