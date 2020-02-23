@@ -196,7 +196,6 @@ services:
       - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
     env_file:
       - .env
-    network_mode: host
     healthcheck:
       test: curl -f http://localhost:5065
       interval: 30s
