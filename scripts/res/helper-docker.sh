@@ -4,7 +4,7 @@ export __DOCKER_COMPOSE_TEMPLATE_FILE="docker-compose-template.yml"
 export __DOCKER_COMPOSE_FILE="docker-compose.yml"
 export __DOCKER_COMPOSE_SHA1SUM="docker-compose-template.sha1sum"
 
-export __DOCKER_CHECKSUM_CMD="/usr/bin/shasum"
+export __DOCKER_CHECKSUM_CMD="/usr/local/bin/sha1sum"
 
 precheck_docker() {
   newsum="$("${__DOCKER_CHECKSUM_CMD}" "${__DOCKER_COMPOSE_TEMPLATE_FILE}")"

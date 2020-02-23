@@ -59,11 +59,11 @@ checking() {
 # 644 -rw-r--r--
 # 755 drwxr-xr-x
 
-checking "permission" "metricbeat/metricbeat.yml" "644"
+checking "permission" "metricbeat/metricbeat.yml" "623"
 checking "owner" "metricbeat/metricbeat.yml" "0"
 checking "group" "metricbeat/metricbeat.yml" "0"
 
-checking "permission" "filebeat/filebeat.yml" "644"
+checking "permission" "filebeat/filebeat.yml" "623"
 checking "owner" "filebeat/filebeat.yml" "0"
 checking "group" "filebeat/filebeat.yml" "0"
 
