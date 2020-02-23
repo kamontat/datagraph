@@ -32,7 +32,7 @@ metricbeat.modules:
       - filesystem # File system usage for each mountpoint
       - fsstat # File system summary metrics
       - socket # Sockets and connection info (linux only)
-      - service # systemd service information
+      # - service # systemd service information
     processes: [".*"]
     # Configure the metric types that are included by these metricsets.
     cpu.metrics: ["percentages", "normalized_percentages"] # The other available option is ticks.

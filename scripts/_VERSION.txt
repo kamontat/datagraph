@@ -1,0 +1,3 @@
+command: v0.1.0-alpha.1
+release notes:
+  - `v0.1.0-alpha.1`: nothing yet (Feb 22, 2020)

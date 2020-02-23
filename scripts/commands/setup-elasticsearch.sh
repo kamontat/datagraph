@@ -1,7 +1,8 @@
 #!/bin/bash
 
-cd "$(dirname "$0")/.." || exit 1
+go_to_project_root
 
+# shellcheck disable=SC1090
 source "$PWD/.env" || exit 2
 
 host="${1:-localhost}"
@@ -201,3 +202,5 @@ unset __elastic_apis
 unset __elastic_change_password
 unset __elastic_create_role
 unset __elastic_create_user
+
+go_back
