@@ -8,10 +8,10 @@ get_permission() {
   # shellcheck disable=SC2207
   arr=($(ls -na "$filename"))
   result="${arr[0]}"
-  [[ "$result" == "-rw--w--wx" ]] && echo 623 && return 0
-  [[ "$result" == "-rw-r--r--" ]] && echo 644 && return 0
-  [[ "$result" == "drwxr-xr-x" ]] && echo 755 && return 0
-  [[ "$result" == "-rwxrwxrwx" ]] && echo 777 && return 0
+  [[ "$result" =~ "-rw--w--wx" ]] && echo 623 && return 0
+  [[ "$result" =~ "-rw-r--r--" ]] && echo 644 && return 0
+  [[ "$result" =~ "drwxr-xr-x" ]] && echo 755 && return 0
+  [[ "$result" =~ "-rwxrwxrwx" ]] && echo 777 && return 0
   echo "$result"
 }
 
@@ -45,14 +45,11 @@ checking() {
   [[ "$expect" == "$actual" ]] && info "checking PASSED !" && return 0
 
   if [[ "$1" == "permission" ]]; then
-    debug "permission" "updating ${filename} to $expect"
-    chmod -R "$expect" "$filename"
+    debug "permission" "run 'chmod -R \"$expect\" \"$filename\"'"
   elif [[ "$1" == "owner" ]]; then
-    debug "owner" "updating ${filename} to $expect"
-    chown -R "$expect" "$filename"
+    debug "owner" "run 'sudo chown -R \"$expect\" \"$filename\"'"
   elif [[ "$1" == "group" ]]; then
-    debug "group" "updating ${filename} to $expect"
-    chown -R ":$expect" "$filename"
+    debug "group" "run 'sudo chown -R \":$expect\" \"$filename\"'"
   fi
 }
 
@@ -68,9 +65,9 @@ checking "owner" "filebeat/filebeat.yml" "0"
 checking "group" "filebeat/filebeat.yml" "0"
 
 checking "owner" "grafana/data" "$USER"
-checking "group" "grafana/data" "${GROUP:-USER}"
+checking "group" "grafana/data" "${GROUP:-$USER}"
 
 checking "owner" "prometheus/data" "$USER"
-checking "group" "prometheus/data" "${GROUP:-USER}"
+checking "group" "prometheus/data" "${GROUP:-$USER}"
 
 go_back

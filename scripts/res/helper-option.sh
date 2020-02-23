@@ -53,7 +53,8 @@ echof() {
   local title="$2"
   shift 2
   local msgs="$*"
-  echo "[${level}] ${title}: ${msgs}"
+
+  printf "[%-5s] %s: %s\n" "$level" "$title" "$msgs"
 }
 debug() {
   # shellcheck disable=SC2068
