@@ -129,7 +129,6 @@ services:
       - .env
     ports:
       - "3201:9200"
-      - "3202:9300"
     healthcheck:
       test: curl -f -u "${ESUN_ELASTIC}:${ESPW_ELASTIC}" http://localhost:9200
       interval: 30s
@@ -196,6 +195,8 @@ services:
       - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
     env_file:
       - .env
+    ports:
+      - "3801:5065"
     healthcheck:
       test: curl -f http://localhost:5065
       interval: 30s
@@ -224,6 +225,8 @@ services:
       - ./heartbeat/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
     env_file:
       - .env
+    ports:
+      - "3802:5067"
     healthcheck:
       test: curl -f http://localhost:5067
       interval: 30s

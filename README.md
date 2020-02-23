@@ -82,6 +82,9 @@ External mean access outside of docker components
 3. Prometheus: http://localhost:3200
 4. Elasticsearch: http://localhost:3201
 5. Onuser exporter: http://localhost:3501/metrics
+6. Filebeat: http://localhost:3800
+7. Metricbeat: http://localhost:3801
+8. Heartbeat: http://localhost:3802
 
 #### Internal
 
@@ -92,6 +95,9 @@ Internal mean access inside docker components
 3. Prometheus: http://prometheus:9090
 4. Elasticsearch: http://elasticsearch:9200
 5. Onuser exporter: http://onuser:1234/metrics
+6. Filebeat: http://filebeat:5066
+7. Metricbeat: http://metricbeat:5065
+8. Heartbeat: http://heartbeat:5067
 
 ### FAQ
 
