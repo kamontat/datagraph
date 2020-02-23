@@ -64,6 +64,10 @@ checking "permission" "filebeat/filebeat.yml" "623"
 checking "owner" "filebeat/filebeat.yml" "0"
 checking "group" "filebeat/filebeat.yml" "0"
 
+checking "permission" "heartbeat/heartbeat.yml" "623"
+checking "owner" "heartbeat/heartbeat.yml" "0"
+checking "group" "heartbeat/heartbeat.yml" "0"
+
 checking "owner" "grafana/data" "$USER"
 checking "group" "grafana/data" "${GROUP:-$USER}"
 
