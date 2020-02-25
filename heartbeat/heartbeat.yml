@@ -27,6 +27,21 @@ heartbeat.monitors:
     hosts:
       - http://onuser:1234
   - type: http
+    name: metricbeat
+    schedule: "@every 10s"
+    hosts:
+      - http://metricbeat:5065
+  - type: http
+    name: filebeat
+    schedule: "@every 10s"
+    hosts:
+      - http://filebeat:5066
+  - type: http
+    name: heartbeat
+    schedule: "@every 10s"
+    hosts:
+      - http://heartbeat:5067
+  - type: http
     name: staging paymentplus
     schedule: "@every 10s"
     hosts:
