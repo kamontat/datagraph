@@ -9,7 +9,8 @@ export class _Logger {
     return ":";
   }
 
-  private namespace: string;
+  private _namespace: string;
+  private _fullNamespace: string;
 
   private _debug?: debug.Debugger;
   private _info?: debug.Debugger;
@@ -17,12 +18,21 @@ export class _Logger {
   private _error?: debug.Debugger;
 
   constructor(...namespaces: string[]) {
-    this.namespace = [_Logger.ROOT_NAMESPACE].concat(...namespaces).join(_Logger.NAMESPACE_SEPERATOR);
+    this._namespace = namespaces.join(_Logger.NAMESPACE_SEPERATOR);
+    this._fullNamespace = [_Logger.ROOT_NAMESPACE].concat(this._namespace).join(_Logger.NAMESPACE_SEPERATOR);
+  }
+
+  get namespace() {
+    return this._namespace;
+  }
+
+  get fullNamespace() {
+    return this._fullNamespace;
   }
 
   debug(format: any, ...msg: any[]) {
     if (!this._debug) {
-      this._debug = debug(this.namespace.concat(_Logger.NAMESPACE_SEPERATOR, "debug"));
+      this._debug = debug(this.fullNamespace.concat(_Logger.NAMESPACE_SEPERATOR, "debug"));
       this._debug.log = console.debug.bind(console);
     }
 
@@ -31,7 +41,7 @@ export class _Logger {
 
   info(format: any, ...msg: any[]) {
     if (!this._info) {
-      this._info = debug(this.namespace.concat(_Logger.NAMESPACE_SEPERATOR, "info"));
+      this._info = debug(this.fullNamespace.concat(_Logger.NAMESPACE_SEPERATOR, "info"));
       this._info.log = console.info.bind(console);
     }
 
@@ -40,7 +50,7 @@ export class _Logger {
 
   warn(format: any, ...msg: any[]) {
     if (!this._warn) {
-      this._warn = debug(this.namespace.concat(_Logger.NAMESPACE_SEPERATOR, "warn"));
+      this._warn = debug(this.fullNamespace.concat(_Logger.NAMESPACE_SEPERATOR, "warn"));
       this._warn.log = console.warn.bind(console);
     }
 
@@ -49,7 +59,7 @@ export class _Logger {
 
   error(format: any, ...msg: any[]) {
     if (!this._error) {
-      this._error = debug(this.namespace.concat(_Logger.NAMESPACE_SEPERATOR, "error"));
+      this._error = debug(this.fullNamespace.concat(_Logger.NAMESPACE_SEPERATOR, "error"));
       this._error.log = console.error.bind(console);
     }
 
@@ -60,6 +70,10 @@ export class _Logger {
 export default class Logger {
   public static namespace(...name: string[]) {
     return new _Logger(...name);
+  }
+
+  public static append(logger: _Logger, ...name: string[]) {
+    return Logger.namespace(logger.namespace, ...name);
   }
 
   public static enableAll() {
