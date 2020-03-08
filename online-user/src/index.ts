@@ -80,14 +80,14 @@ const server = new Server((req, res) => {
     auth: `${staging.auth.username}:${staging.auth.password}`
   });
 
-  request
-    .make()
-    .then(data => {
-      return requestStaging.make().then(data2 => {
-        return new Promise<{ prod: any; stag: any }>(res => res({ prod: data, stag: data2 }));
-      });
-    })
-    .then(({ prod, stag }) => {
+  const prodPromise = request.make();
+  const stagPromise = requestStaging.make();
+
+  return Promise.all([prodPromise, stagPromise])
+    .then(values => {
+      const prod = values[0];
+      const stag = values[1];
+
       T.ry(() => {
         const parser = new Parser(logger);
 
