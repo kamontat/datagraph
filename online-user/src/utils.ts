@@ -35,12 +35,14 @@ export class O<T> extends Serialization {
   }
 
   getOrElse(t: T): T {
-    if (
-      this.t === undefined ||
-      this.t === null ||
-      (typeof this.t === "number" && (isNaN(this.t as any) || isFinite(this.t as any)))
-    ) {
-      logger.debug(`${this.object} is falling back to default (${t})`);
+    if (this.t === undefined) {
+      logger.debug(`${this.object} is 'undefined' so falling back to default (${t})`);
+      return t;
+    } else if (this.t === null) {
+      logger.debug(`${this.object} is 'null' so falling back to default (${t})`);
+      return t;
+    } else if (typeof this.t === "number" && isNaN(this.t as any)) {
+      logger.debug(`${this.object} is 'NaN' so falling back to default (${t})`);
       return t;
     } else {
       logger.debug(`${this.object} is exist`);
