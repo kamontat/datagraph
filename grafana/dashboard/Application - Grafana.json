@@ -60,7 +60,6 @@
       }
     ]
   },
-  "description": "Metrics about Grafana",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
@@ -540,7 +539,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 10,
-        "w": 8,
+        "w": 7,
         "x": 0,
         "y": 5
       },
@@ -638,8 +637,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 10,
-        "w": 8,
-        "x": 8,
+        "w": 7,
+        "x": 7,
         "y": 5
       },
       "height": "",
@@ -744,8 +743,8 @@
       "fontSize": "100%",
       "gridPos": {
         "h": 10,
-        "w": 4,
-        "x": 16,
+        "w": 5,
+        "x": 14,
         "y": 5
       },
       "height": "",
@@ -805,8 +804,8 @@
       "fontSize": "100%",
       "gridPos": {
         "h": 10,
-        "w": 4,
-        "x": 20,
+        "w": 5,
+        "x": 19,
         "y": 5
       },
       "height": "",
@@ -987,7 +986,7 @@
         "firing alerts": "#BF1B00",
         "ok": "#7EB26D"
       },
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
@@ -1003,14 +1002,14 @@
       "id": 18,
       "legend": {
         "avg": false,
-        "current": true,
+        "current": false,
         "max": false,
         "min": false,
         "show": true,
         "total": false,
-        "values": true
+        "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
@@ -1027,9 +1026,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(grafana_alerting_notification_sent_total[30s])",
+          "expr": "increase(grafana_alerting_notification_sent_total[1m])",
           "format": "time_series",
-          "intervalFactor": 3,
+          "interval": "",
+          "intervalFactor": 1,
           "legendFormat": "{{type}}",
           "refId": "A",
           "step": 15
@@ -1203,18 +1203,17 @@
     }
   ],
   "refresh": "10s",
-  "revision": "1.0",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [
-    "grafana",
-    "prometheus"
+    "application",
+    "grafana"
   ],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -1224,26 +1223,11 @@
       "30s",
       "1m",
       "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
+      "10m"
     ]
   },
   "timezone": "",
-  "title": "Grafana Metrics",
-  "uid": "ODFpGSwZz",
+  "title": "Application - Grafana",
+  "uid": "PPj1jR_Wz",
   "version": 2
 }
