@@ -23,6 +23,7 @@
   "scripts": {
     "compile": "webpack",
     "start": "node ./dist/index.js",
+    "start:docker": "docker run -it --rm -p 1234:1234 --name onuser gcr.io/the-tokenizer-268111/onuser",
     "docker": "docker build --tag gcr.io/the-tokenizer-268111/onuser .",
     "deploy:docker": "docker push gcr.io/the-tokenizer-268111/onuser"
   }
