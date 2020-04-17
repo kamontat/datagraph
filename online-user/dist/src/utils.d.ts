@@ -1,8 +1,9 @@
+import { _Logger } from "./logger";
 export declare class Serialization {
     private __name;
+    protected logger: _Logger;
     private __uuid;
-    constructor(__name?: string);
-    protected get object(): string;
+    constructor(__name?: string, logger?: _Logger);
     protected get name(): string;
     protected get uuid(): string;
 }

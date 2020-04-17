@@ -71,13 +71,19 @@ const server = new Server((req, res) => {
   const request = new Request({
     hostname: `${production.host}`,
     path: `${production.path}`,
-    auth: `${production.auth.username}:${production.auth.password}`
+    auth: `${production.auth.username}:${production.auth.password}`,
+    port: 443,
+    method: "GET",
+    timeout: 5000 // ms
   });
 
   const requestStaging = new Request({
     hostname: `${staging.host}`,
     path: `${staging.path}`,
-    auth: `${staging.auth.username}:${staging.auth.password}`
+    auth: `${staging.auth.username}:${staging.auth.password}`,
+    port: 443,
+    method: "GET",
+    timeout: 5000 // ms
   });
 
   const prodPromise = request.make();

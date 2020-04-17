@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import https from "https";
-export default class Request {
+import { Serialization } from "./utils";
+export default class Request extends Serialization {
     private options;
     constructor(options: https.RequestOptions);
     make(): Promise<any>;
